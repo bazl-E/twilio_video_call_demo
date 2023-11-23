@@ -1,0 +1,47 @@
+PODS:
+  - Flutter (1.0.0)
+  - native_device_orientation (0.0.1):
+    - Flutter
+  - permission_handler_apple (9.1.1):
+    - Flutter
+  - twilio_programmable_video (1.1.1):
+    - Flutter
+    - TwilioVideo (~> 4.6)
+  - TwilioVideo (4.6.3)
+  - wakelock (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - native_device_orientation (from `.symlinks/plugins/native_device_orientation/ios`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - twilio_programmable_video (from `.symlinks/plugins/twilio_programmable_video/ios`)
+  - wakelock (from `.symlinks/plugins/wakelock/ios`)
+
+SPEC REPOS:
+  trunk:
+    - TwilioVideo
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  native_device_orientation:
+    :path: ".symlinks/plugins/native_device_orientation/ios"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  twilio_programmable_video:
+    :path: ".symlinks/plugins/twilio_programmable_video/ios"
+  wakelock:
+    :path: ".symlinks/plugins/wakelock/ios"
+
+SPEC CHECKSUMS:
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  native_device_orientation: 3b4cfc9565a7b879cc4fde282b3e27745e852d0d
+  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
+  twilio_programmable_video: ffb2a62b2734ce083f502f0ed54130aeeec615b3
+  TwilioVideo: 4afaac028c5886f2f3b313a9fcc146a6b7ca34e2
+  wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
+
+PODFILE CHECKSUM: b587fd908d765578869ec35258a0e3758647af24
+
+COCOAPODS: 1.13.0

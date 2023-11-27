@@ -6,12 +6,13 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:twilio_programmable_video/twilio_programmable_video.dart';
-
-import '../widgets/participant_widget.dart';
+import 'package:uuid/uuid.dart';
+import 'package:video_call/widgets/participant_widget.dart';
 
 class ConferenceRoom with ChangeNotifier {
   final String name;
   final String token;
+  final String identity;
 
   final StreamController<bool> _onAudioEnabledStreamController =
       StreamController<bool>.broadcast();
@@ -46,10 +47,12 @@ class ConferenceRoom with ChangeNotifier {
   bool flashEnabled = false;
   bool speakerphoneEnabled = true;
   bool bluetoothPreferred = true;
+  var trackId;
 
   ConferenceRoom({
     required this.name,
     required this.token,
+    required this.identity,
   }) {
     onAudioEnabled = _onAudioEnabledStreamController.stream;
     onVideoEnabled = _onVideoEnabledStreamController.stream;
@@ -88,18 +91,18 @@ class ConferenceRoom with ChangeNotifier {
       _cameraCapturer = CameraCapturer(
         sources.firstWhere((source) => source.isFrontFacing),
       );
-      // trackId = Uuid().v4();
+      trackId = const Uuid().v4();
 
       var connectOptions = ConnectOptions(
         token,
         roomName: name,
         preferredAudioCodecs: [OpusCodec()],
-        // audioTracks: [LocalAudioTrack(true, 'audio_track-$trackId')],
-        // dataTracks: [
-        //   LocalDataTrack(
-        //     DataTrackOptions(name: 'data_track-$trackId'),
-        //   )
-        // ],
+        audioTracks: [LocalAudioTrack(true, 'audio_track-$trackId')],
+        dataTracks: [
+          LocalDataTrack(
+            DataTrackOptions(name: 'data_track-$trackId'),
+          )
+        ],
         videoTracks: [LocalVideoTrack(true, _cameraCapturer)],
         enableNetworkQuality: true,
         networkQualityConfiguration: NetworkQualityConfiguration(
@@ -123,7 +126,7 @@ class ConferenceRoom with ChangeNotifier {
 
       return _completer.future;
     } catch (err) {
-      log(err.toString());
+      print(err);
       rethrow;
     }
   }
@@ -287,6 +290,7 @@ class ConferenceRoom with ChangeNotifier {
     _participants.insert(
       0,
       ParticipantWidget(
+        id: (_participants.length + 1).toString(),
         isRemote: true,
         audioEnabled: true,
         videoEnabled: true,
@@ -338,6 +342,7 @@ class ConferenceRoom with ChangeNotifier {
     _participants.add(
       _buildParticipant(
           child: localParticipant.localVideoTracks[0].localVideoTrack.widget(),
+          id: identity,
           audioEnabled: true,
           videoEnabled: true,
           networkQualityLevel: localParticipant.networkQualityLevel,
@@ -400,7 +405,7 @@ class ConferenceRoom with ChangeNotifier {
     }
 
     var newDominantParticipantIndex =
-        _participants.indexWhere((p) => p.key == event.remoteParticipant?.sid);
+        _participants.indexWhere((p) => p.id == event.remoteParticipant?.sid);
     _participants[newDominantParticipantIndex] =
         _participants[newDominantParticipantIndex].copyWith(isDominant: true);
     notifyListeners();
@@ -413,8 +418,8 @@ class ConferenceRoom with ChangeNotifier {
 
   void _onParticipantDisconnected(RoomParticipantDisconnectedEvent event) {
     log('ConferenceRoom._onParticipantDisconnected: ${event.remoteParticipant.sid}');
-    _participants
-        .removeWhere((ParticipantWidget p) => participants.first.key == p.key);
+    _participants.removeWhere(
+        (ParticipantWidget p) => p.id == event.remoteParticipant.sid);
     notifyListeners();
   }
 
@@ -440,6 +445,7 @@ class ConferenceRoom with ChangeNotifier {
 
   ParticipantWidget _buildParticipant({
     required Widget child,
+    required String? id,
     required bool audioEnabled,
     required bool videoEnabled,
     required NetworkQualityLevel networkQualityLevel,
@@ -447,6 +453,7 @@ class ConferenceRoom with ChangeNotifier {
     RemoteParticipant? remoteParticipant,
   }) {
     return ParticipantWidget(
+      id: remoteParticipant?.sid,
       isRemote: remoteParticipant != null,
       audioEnabled: audioEnabled,
       videoEnabled: videoEnabled,
@@ -660,7 +667,7 @@ class ConferenceRoom with ChangeNotifier {
           participant.key == event.remoteParticipant.sid,
     );
     if (participant != null) {
-// log('Participant found: ${participant.id}, updating A/V enabled values');
+      log('Participant found: ${participant.key}, updating A/V enabled values');
       if (event is RemoteVideoTrackEvent) {
         _setRemoteVideoEnabled(event);
       } else if (event is RemoteAudioTrackEvent) {
@@ -669,7 +676,7 @@ class ConferenceRoom with ChangeNotifier {
     } else {
       final bufferedParticipant = _participantBuffer.firstWhereOrNull(
         (ParticipantBuffer participant) =>
-            participant.id == event.remoteParticipant.sid,
+            participant == event.remoteParticipant.sid,
       );
       if (bufferedParticipant != null) {
         _participantBuffer.remove(bufferedParticipant);
@@ -691,6 +698,7 @@ class ConferenceRoom with ChangeNotifier {
           0,
           _buildParticipant(
             child: event.remoteVideoTrack.widget(),
+            id: event.remoteParticipant.sid,
             remoteParticipant: event.remoteParticipant,
             audioEnabled: bufferedParticipant?.audioEnabled ?? true,
             videoEnabled:

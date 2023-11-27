@@ -32,8 +32,8 @@ class _ConferencePageState extends State<ConferencePage> {
       StreamController<double>.broadcast();
   ConferenceRoom? _conferenceRoom;
   StreamSubscription? _onConferenceRoomException;
-  final List<String> selectedParticipants = [];
-  List<String> totalParticipant = [];
+  List<ParticipantWidget> selectedParticipants = [];
+  List<ParticipantWidget> totalParticipant = [];
 
   @override
   void initState() {
@@ -41,23 +41,23 @@ class _ConferencePageState extends State<ConferencePage> {
     _lockInPortrait();
     _connectToRoom();
     _wakeLock(true);
-    totalParticipant = List.generate(_conferenceRoom?.participants.length??1, (index) => 'User ${index + 1}');
-    if (selectedParticipants.isEmpty) {
-      selectedParticipants.addAll(totalParticipant.sublist(
-          0, totalParticipant.length < 7 ? totalParticipant.length : 7));
-    }
   }
 
   void _connectToRoom() async {
     try {
       final conferenceRoom = ConferenceRoom(
-        name: 'qhf-s8kr-pgb',
+        name: '450-tmv1-9gi',
+        identity: 'werewrwerewr',
         token:
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzU4NmU2OWZhYjZmMWRiYzUxMDNhYzE5NDE1ZjI0NDY2LTE3MDA3MTczMzciLCJpc3MiOiJTSzU4NmU2OWZhYjZmMWRiYzUxMDNhYzE5NDE1ZjI0NDY2Iiwic3ViIjoiQUNmMDZmMzI4MTY0OGUyMTcwOTIzODhmNzAwMTE5OGY2OCIsImV4cCI6MTcwMDcyNDUzNywiZ3JhbnRzIjp7ImlkZW50aXR5Ijoic2FqYW4iLCJ2aWRlbyI6eyJyb29tIjoicWhmLXM4a3ItcGdiIn19fQ.0BrqwEQH3fmsWqDCA75Nr8p2kp5Tq6kvb3DPp4UR6sw',
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzU4NmU2OWZhYjZmMWRiYzUxMDNhYzE5NDE1ZjI0NDY2LTE3MDA3MzQyNDgiLCJpc3MiOiJTSzU4NmU2OWZhYjZmMWRiYzUxMDNhYzE5NDE1ZjI0NDY2Iiwic3ViIjoiQUNmMDZmMzI4MTY0OGUyMTcwOTIzODhmNzAwMTE5OGY2OCIsImV4cCI6MTcwMDc0MTQ0OCwiZ3JhbnRzIjp7ImlkZW50aXR5IjoiYXMiLCJ2aWRlbyI6eyJyb29tIjoiNDUwLXRtdjEtOWdpIn19fQ.07S_Bfvh17Rt29dDwncWT304PR1o_rY-_N5UBEc4GP4',
       );
       await conferenceRoom.connect();
+
       setState(() {
         _conferenceRoom = conferenceRoom;
+        totalParticipant = _conferenceRoom?.participants ?? [];
+        selectedParticipants = removeDuplicatesById(totalParticipant.sublist(
+            0, totalParticipant.length < 7 ? totalParticipant.length : 7));
         _onConferenceRoomException =
             conferenceRoom.onException.listen((err) async {
           // await _showPlatformAlertDialog(err);
@@ -134,7 +134,7 @@ class _ConferencePageState extends State<ConferencePage> {
             builder: (BuildContext context, BoxConstraints constraints) {
               return Stack(
                 children: <Widget>[
-                  _buildParticipantsGrid(context, conferenceRoom),
+                  _buildParticipantsGrid(),
                   ConferenceButtonBar(
                     audioEnabled: conferenceRoom.onAudioEnabled,
                     videoEnabled: conferenceRoom.onVideoEnabled,
@@ -159,10 +159,10 @@ class _ConferencePageState extends State<ConferencePage> {
   }
 
   Widget showProgress() {
-    return const Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
+      children: const <Widget>[
         Center(child: CircularProgressIndicator()),
         SizedBox(
           height: 10,
@@ -222,86 +222,46 @@ class _ConferencePageState extends State<ConferencePage> {
     _conferenceRoom?.removeDummy();
   }
 
-  // Widget _buildParticipants(
-  //     BuildContext context, Size size, ConferenceRoom conferenceRoom) {
-  //   final children = <Widget>[];
-  //   final length = conferenceRoom.participants.length;
+  Widget _buildParticipantsGrid() {
+    if (selectedParticipants.length < 2) {
+      return _buildNoiseBox();
+    }
 
-  //   if (length <= 2) {
-  //     _buildOverlayLayout(context, size, children);
-  //     return Stack(children: children);
-  //   }
-
-  //   void buildInCols(bool removeLocalBeforeChunking,
-  //       bool moveLastOfEachRowToNextRow, int columns) {
-  //     _buildLayoutInGrid(
-  //       context,
-  //       size,
-  //       children,
-  //       removeLocalBeforeChunking: removeLocalBeforeChunking,
-  //       moveLastOfEachRowToNextRow: moveLastOfEachRowToNextRow,
-  //       columns: columns,
-  //     );
-  //   }
-
-  //   if (length <= 3) {
-  //     buildInCols(true, false, 1);
-  //   } else if (length == 5) {
-  //     buildInCols(false, true, 2);
-  //   } else if (length <= 6 || length == 8) {
-  //     buildInCols(false, false, 2);
-  //   } else if (length == 7 || length == 9) {
-  //     buildInCols(true, false, 2);
-  //   } else if (length == 10) {
-  //     buildInCols(false, true, 3);
-  //   } else if (length == 13 || length == 16) {
-  //     buildInCols(true, false, 3);
-  //   } else if (length <= 18) {
-  //     buildInCols(false, false, 3);
-  //   }
-
-  //   return Column(
-  //     children: children,
-  //   );
-  // }
-
-  Widget _buildParticipantsGrid(
-      BuildContext context, ConferenceRoom conferenceRoom) {
-    if (conferenceRoom.participants.length == 2) {
+    if (selectedParticipants.length == 2) {
       return Column(
         children: [
           Expanded(
             child: _buildParticipantItem(
-                conferenceRoom.participants[0].key.toString(),
-                conferenceRoom.participants[0]),
+              selectedParticipants[0],
+            ),
           ),
           Expanded(
             child: _buildParticipantItem(
-                conferenceRoom.participants[1].key.toString(),
-                conferenceRoom.participants[1]),
+              selectedParticipants[1],
+            ),
           ),
         ],
       );
     }
     List<Widget> rows = [];
 
-    for (int i = 0; i < conferenceRoom.participants.length; i += 2) {
+    for (int i = 0; i < selectedParticipants.length; i += 2) {
       List<Widget> rowChildren = [];
 
       rowChildren.add(
         Expanded(
           child: _buildParticipantItem(
-              conferenceRoom.participants[i].key.toString(),
-              conferenceRoom.participants[i]),
+            selectedParticipants[i],
+          ),
         ),
       );
 
-      if (i + 1 < conferenceRoom.participants.length) {
+      if (i + 1 < selectedParticipants.length) {
         rowChildren.add(
           Expanded(
             child: _buildParticipantItem(
-                conferenceRoom.participants[i].key.toString(),
-                conferenceRoom.participants[i]),
+              selectedParticipants[i + 1],
+            ),
           ),
         );
       }
@@ -320,21 +280,13 @@ class _ConferencePageState extends State<ConferencePage> {
     );
   }
 
-  Widget _buildParticipantItem(
-      String participantName, ParticipantWidget participant) {
+  Widget _buildParticipantItem(ParticipantWidget participant) {
     // For demonstration purposes, using an AspectRatio to fill the available space
     return Container(
         margin: const EdgeInsets.all(2.0),
         // padding: const EdgeInsets.all(16.0),
 
-        child: participant
-        // Center(
-        //   child: Text(
-        //     participantName,
-        //     style: const TextStyle(color: Colors.white),
-        //   ),
-        // ),
-        );
+        child: participant);
   }
 
   void _buildOverlayLayout(
@@ -466,6 +418,21 @@ class _ConferencePageState extends State<ConferencePage> {
     return result;
   }
 
+  List<ParticipantWidget> removeDuplicatesById(
+      List<ParticipantWidget> originalList) {
+    List<String> encounteredIds = [];
+    List<ParticipantWidget> uniqueList = [];
+
+    for (var obj in originalList) {
+      if (!encounteredIds.contains(obj.id)) {
+        encounteredIds.add(obj.id ?? "0");
+        uniqueList.add(obj);
+      }
+    }
+
+    return uniqueList;
+  }
+
   void _onHeightBar(double height) {
     _onButtonBarHeightStreamController.add(height);
   }
@@ -496,6 +463,84 @@ class _ConferencePageState extends State<ConferencePage> {
   }
 
   void _conferenceRoomUpdated() {
-    setState(() {});
+    setState(() {
+      totalParticipant =
+          removeDuplicatesById(_conferenceRoom?.participants ?? []);
+      // if (selectedParticipants.length < 7) {
+      selectedParticipants = totalParticipant.sublist(
+          0, totalParticipant.length < 7 ? totalParticipant.length : 7);
+      // }
+    });
+  }
+}
+
+class ShowAllMembersListScree extends StatefulWidget {
+  const ShowAllMembersListScree({
+    super.key,
+    required this.totalParticipants,
+    required this.onSelected,
+    required this.selectedParticipant,
+    required this.scrollController,
+  });
+
+  final List<String> totalParticipants;
+  final List<String> selectedParticipant;
+  final void Function(int index) onSelected;
+  final DraggableScrollableController scrollController;
+
+  @override
+  State<ShowAllMembersListScree> createState() =>
+      _ShowAllMembersListScreeState();
+}
+
+class _ShowAllMembersListScreeState extends State<ShowAllMembersListScree> {
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      controller: widget.scrollController,
+      expand: false,
+      maxChildSize: 1,
+      // initialChildSize: 1,
+      builder: (context, scrollController) {
+        return Column(
+          children: [
+            AppBar(
+              title: const Text('All Members'),
+              automaticallyImplyLeading: false,
+            ),
+            Expanded(
+              child: ListView.builder(
+                controller: scrollController,
+                itemBuilder: (context, index) {
+                  if (widget.selectedParticipant
+                      .contains(widget.totalParticipants[index])) {
+                    return const SizedBox();
+                  }
+
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      onTap: () {
+                        // Navigator.pop(context);
+                        setState(() {
+                          widget.onSelected(index);
+                        });
+                        Navigator.pop(context);
+                      },
+                      leading: CircleAvatar(
+                        child: Text(widget.totalParticipants[index][0]),
+                      ),
+                      title: Text(widget.totalParticipants[index]),
+                      trailing: const Icon(Icons.add),
+                    ),
+                  );
+                },
+                itemCount: widget.totalParticipants.length,
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

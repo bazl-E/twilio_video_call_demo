@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:twilio_programmable_video/twilio_programmable_video.dart';
+import 'package:video_call/widgets/network_indicator.dart';
 
 class ParticipantBuffer {
   final bool audioEnabled;
@@ -15,7 +16,7 @@ class ParticipantBuffer {
 
 class ParticipantWidget extends StatelessWidget {
   final Widget child;
-
+  final String? id;
   final bool audioEnabled;
   final bool videoEnabled;
   final bool isRemote;
@@ -31,6 +32,7 @@ class ParticipantWidget extends StatelessWidget {
     required this.child,
     required this.audioEnabled,
     required this.videoEnabled,
+    required this.id,
     required this.isRemote,
     this.networkQualityLevel =
         NetworkQualityLevel.NETWORK_QUALITY_LEVEL_UNKNOWN,
@@ -49,6 +51,7 @@ class ParticipantWidget extends StatelessWidget {
     bool? audioEnabledLocally,
   }) {
     return ParticipantWidget(
+      id: id,
       audioEnabled: audioEnabled ?? this.audioEnabled,
       videoEnabled: videoEnabled ?? this.videoEnabled,
       isDominant: isDominant ?? this.isDominant,
@@ -129,13 +132,15 @@ class ParticipantWidget extends StatelessWidget {
       }
     }
 
-    // children.add(NetworkQualityIndicator(
-    //   networkQualityIndicatorPosition: NetworkQualityIndicatorPosition.bottomCenter,
-    //   bottom: 10,
-    //   networkQualityLevel: networkQualityLevel,
-    //   showFromNetworkQualityLevelAndBelow: NetworkQualityLevel.NETWORK_QUALITY_LEVEL_THREE,
-    //   onNetworkQualityChanged: onNetworkQualityChanged,
-    // ));
+    children.add(NetworkQualityIndicator(
+      networkQualityIndicatorPosition:
+          NetworkQualityIndicatorPosition.bottomCenter,
+      bottom: 10,
+      networkQualityLevel: networkQualityLevel,
+      showFromNetworkQualityLevelAndBelow:
+          NetworkQualityLevel.NETWORK_QUALITY_LEVEL_THREE,
+      onNetworkQualityChanged: onNetworkQualityChanged,
+    ));
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,

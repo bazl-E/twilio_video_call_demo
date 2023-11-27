@@ -21,7 +21,7 @@ class JoinRoomForm extends StatefulWidget {
 
 class _JoinRoomFormState extends State<JoinRoomForm> {
   final TextEditingController _nameController =
-      TextEditingController(text: 'qhf-s8kr-pgb');
+      TextEditingController(text: '8sf-nlc5-29u');
   RoomModel roomModel = RoomModel();
 
   @override
@@ -31,9 +31,9 @@ class _JoinRoomFormState extends State<JoinRoomForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _buildChildren(roomModel.copyWith(
-          name: 'qhf-s8kr-pgb',
+          name: '8sf-nlc5-29u',
           token:
-              'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzU4NmU2OWZhYjZmMWRiYzUxMDNhYzE5NDE1ZjI0NDY2LTE3MDA3MTczMzciLCJpc3MiOiJTSzU4NmU2OWZhYjZmMWRiYzUxMDNhYzE5NDE1ZjI0NDY2Iiwic3ViIjoiQUNmMDZmMzI4MTY0OGUyMTcwOTIzODhmNzAwMTE5OGY2OCIsImV4cCI6MTcwMDcyNDUzNywiZ3JhbnRzIjp7ImlkZW50aXR5Ijoic2FqYW4iLCJ2aWRlbyI6eyJyb29tIjoicWhmLXM4a3ItcGdiIn19fQ.0BrqwEQH3fmsWqDCA75Nr8p2kp5Tq6kvb3DPp4UR6sw',
+              'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzU4NmU2OWZhYjZmMWRiYzUxMDNhYzE5NDE1ZjI0NDY2LTE3MDA3MzA1MjgiLCJpc3MiOiJTSzU4NmU2OWZhYjZmMWRiYzUxMDNhYzE5NDE1ZjI0NDY2Iiwic3ViIjoiQUNmMDZmMzI4MTY0OGUyMTcwOTIzODhmNzAwMTE5OGY2OCIsImV4cCI6MTcwMDczNzcyOCwiZ3JhbnRzIjp7ImlkZW50aXR5IjoiYmFzaWwiLCJ2aWRlbyI6eyJyb29tIjoiOHNmLW5sYzUtMjl1In19fQ.KSFDQGVZKSUQn3p5Gq7x5rwqkep0m4kpO5MT5biPJzk',
         )),
       ),
     );

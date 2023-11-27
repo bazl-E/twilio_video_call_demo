@@ -40,6 +40,7 @@ dependencies:
   wakelock: ^0.6.2
   after_layout: ^1.2.0
   native_device_orientation: ^1.2.1
+  uuid: ^4.2.1
 
 dev_dependencies:
   flutter_test:

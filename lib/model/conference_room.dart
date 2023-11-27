@@ -12,6 +12,7 @@ import '../widgets/participant_widget.dart';
 class ConferenceRoom with ChangeNotifier {
   final String name;
   final String token;
+  final String identity;
 
   final StreamController<bool> _onAudioEnabledStreamController =
       StreamController<bool>.broadcast();
@@ -50,6 +51,7 @@ class ConferenceRoom with ChangeNotifier {
   ConferenceRoom({
     required this.name,
     required this.token,
+    required this.identity,
   }) {
     onAudioEnabled = _onAudioEnabledStreamController.stream;
     onVideoEnabled = _onVideoEnabledStreamController.stream;
@@ -287,6 +289,7 @@ class ConferenceRoom with ChangeNotifier {
     _participants.insert(
       0,
       ParticipantWidget(
+        identity: identity,
         isRemote: true,
         audioEnabled: true,
         videoEnabled: true,
@@ -447,6 +450,7 @@ class ConferenceRoom with ChangeNotifier {
     RemoteParticipant? remoteParticipant,
   }) {
     return ParticipantWidget(
+      identity: identity,
       isRemote: remoteParticipant != null,
       audioEnabled: audioEnabled,
       videoEnabled: videoEnabled,

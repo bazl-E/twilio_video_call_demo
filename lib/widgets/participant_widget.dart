@@ -16,6 +16,7 @@ class ParticipantBuffer {
 class ParticipantWidget extends StatelessWidget {
   final Widget child;
 
+  final String identity;
   final bool audioEnabled;
   final bool videoEnabled;
   final bool isRemote;
@@ -28,6 +29,7 @@ class ParticipantWidget extends StatelessWidget {
 
   const ParticipantWidget({
     Key? key,
+    required this.identity,
     required this.child,
     required this.audioEnabled,
     required this.videoEnabled,
@@ -49,6 +51,7 @@ class ParticipantWidget extends StatelessWidget {
     bool? audioEnabledLocally,
   }) {
     return ParticipantWidget(
+      identity: identity,
       audioEnabled: audioEnabled ?? this.audioEnabled,
       videoEnabled: videoEnabled ?? this.videoEnabled,
       isDominant: isDominant ?? this.isDominant,
